@@ -71,13 +71,27 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
      * Performing rotations on parent-child pairs of nodes that have between them
      * 0, 1, 2, and 3 shared children (that do not include the child being rotated).
      */
-    public void test1() {
-
+    public boolean test1() {
+        var tree1 = new BSTRotation<T>();
+        if (tree1.size() != 11) {
+            return false;
+        }
+        return true;
     }
-    public void test2() {
 
+    public boolean test2() {
+
+        return true;
     }
-    public void test3() {
 
+    public boolean test3() {
+
+        return true;
+    }
+
+    public void main() {
+        System.out.println("Test 1 results: " + test1());
+        System.out.println("Test 2 results: " + test2());
+        System.out.println("Test 3 results: " + test3());
     }
 }
