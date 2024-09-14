@@ -1,6 +1,5 @@
 public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Placeholder<T> {
 
-    protected BSTNode<T> root;
     /**
      * Performs the rotation operation on the provided nodes within this tree.
      * When the provided child is a left child of the provided parent, this
@@ -21,39 +20,12 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
         if (child == null || parent == null) {
             throw new NullPointerException();
         }
-        if (parent.getLeft() != child || parent.getRight() != child) {
+        if (parent.getLeft() != child && parent.getRight() != child) {
+            System.out.println(parent.getLeft().getData() + " " + child.getData());
             throw new IllegalArgumentException();
         }
-        if (parent.getLeft() == child) {
-            // perform right rotation
-            if (parent.getUp() != null) {
-                parent.getUp().setRight(child);
-                child.setUp(parent.getUp());
-            }
-            // parent node gets the child's right subtree, including null
-            parent.setLeft(child.getRight());
-            // but if there's actually data then make that node's up point to the parent node
-            if (child.getRight() != null) {
-                child.getRight().setUp(parent);
-            }
-            // we get to keep the left subtree of the child attached, just make the child the up of the parent
-            child.setRight(parent);
-        }
-        if (parent.getRight() == child) {
-            // perform left rotation
-            if (parent.getUp() != null) {
-                parent.getUp().setLeft(child);
-                child.setUp(parent.getUp());
-            }
-            // basically just the complete opposite of right rotation
-            // parent gets child's left subtree - then check if there's actually data in the child's left
-            // keep the right subtree of the child, and make the parent's parent the child node
-            parent.setRight(child.getLeft());
-            if (child.getLeft() != null) {
-                child.getLeft().setUp(parent);
-            }
-            child.setLeft(parent);
-        }
+
+        // handle where the root or its references may need to be changed before modifying
         if (parent.getUp() == null) {
             root = child;
         }
@@ -63,6 +35,31 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
         else {
             parent.getUp().setRight(child);
         }
+
+        child.setUp(parent.getUp());
+
+        if (parent.getLeft() == child) {
+            // perform right rotation
+            // parent node gets the child's right subtree, including null
+            parent.setLeft(child.getRight());
+            // but if there's actually data then make that node's up point to the parent node
+            if (child.getRight() != null) {
+                child.getRight().setUp(parent);
+            }
+            // we get to keep the left subtree of the child attached, just make the child the up of the parent
+            child.setRight(parent);
+        }
+        else if (parent.getRight() == child) {
+            // perform left rotation
+            // basically just the complete opposite of right rotation
+            // parent gets child's left subtree - then check if there's actually data in the child's left
+            // keep the right subtree of the child, and make the parent's parent the child node
+            parent.setRight(child.getLeft());
+            if (child.getLeft() != null) {
+                child.getLeft().setUp(parent);
+            }
+            child.setLeft(parent);
+        }
     }
 
     /**
@@ -70,12 +67,77 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
      * Performing rotations that include the root node, and some that do not.
      * Performing rotations on parent-child pairs of nodes that have between them
      * 0, 1, 2, and 3 shared children (that do not include the child being rotated).
+     * default tree nodes are inserted in E, B, H, A, D, F, J, C, G, I, K order.
+     * tree structure is:
+     *                  E
+     *             B         H
+     *          A     D    F    J
+     *               C      G  I  K
      */
     public boolean test1() {
-        var tree1 = new BSTRotation<T>();
+        var tree1 = new BSTRotation<String>();
+
         if (tree1.size() != 11) {
             return false;
         }
+        var parent = tree1.root.getLeft();
+        var child = parent.getLeft();
+
+        // rotate B and A  - right rotation not involving switching of the root node
+        tree1.rotate(child, parent);
+        /*
+         * * tree structure now is:
+         *                  E
+         *             A         H
+         *                B    F    J
+         *                  D     G  I  K
+         *                 C
+         */
+
+        if (tree1.root.getLeft().getData() != "A") {
+            return false;
+        }
+        if (tree1.root.getLeft().getRight().getData() != "B") {
+            return false;
+        }
+        if (tree1.root.getLeft().getRight().getRight().getData() != "D") {
+            return false;
+        }
+        if (tree1.root.getRight().getData() != "H") {
+            return false;
+        }
+        // in order traversal is [A, B, C, D, E, F, G, H, I, J, K]
+        if (!tree1.root.toInOrderString().equals("[ A, B, C, D, E, F, G, H, I, J, K ]")) {
+            return false;
+        }
+        // level order traversal is [E, A, H, B, F, J, D, G, I, K, C]
+        if (!tree1.root.toLevelOrderString().equals("[ E, A, H, B, F, J, D, G, I, K, C ]")) {
+            return false;
+        }
+
+        tree1.clear();
+
+        var tree2 = new BSTRotation<String>();
+
+        if (tree2.size() != 11) {
+            return false;
+        }
+
+        var parent1 = tree2.root;
+        var child1 = parent1.getRight();
+
+        // rotate E and H  - left rotation that involves the root
+        tree2.rotate(child1, parent1);
+        /*
+         * * tree structure now is:
+         *                  H
+         *             E         J
+         *          B     F    I    K
+         *       A     D    G
+         *            C
+         */
+        System.out.println(tree2.root);
+        System.out.println(tree2.root.toLevelOrderString());
         return true;
     }
 
