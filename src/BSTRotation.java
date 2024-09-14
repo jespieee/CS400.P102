@@ -69,6 +69,7 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
      * 0, 1, 2, and 3 shared children (that do not include the child being rotated).
      * default tree nodes are inserted in E, B, H, A, D, F, J, C, G, I, K order.
      * tree structure is:
+     * E, D, J, B,
      *                  E
      *             B         H
      *          A     D    F    J
@@ -184,8 +185,45 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
         return true;
     }
 
+    /**
+     * Performs rotations on nodes that share 1 or 2 children
+     * @return false if rotation fails, or if any value isn't what it is expected to be
+     */
     public boolean test3() {
+        var tree = new BSTRotation<String>();
+        if (tree.size() != 11) {
+            return false;
+        }
+        var bNode = tree.root.getLeft();
+        var dNode = tree.root.getLeft().getRight();
+        if (bNode.getData() != "B" || dNode.getData() != "D" || bNode.getRight() != dNode || dNode.getUp() != bNode) {
+            return false;
+        }
 
+        // rotate nodes that share 1 child, in this case "D" and "B" share the "C" node
+        tree.rotate(dNode, bNode);
+
+        if (!tree.root.toInOrderString().equals("[ A, B, C, D, E, F, G, H, I, J, K ]")) {
+            return false;
+        }
+        if (!tree.root.toLevelOrderString().equals("[ E, D, H, B, F, J, A, C, G, I, K ]")) {
+            return false;
+        }
+
+        var hNode = tree.root.getRight();
+        var jNode = tree.root.getRight().getRight();
+        if (hNode.getData() != "H" || jNode.getData() != "J" || hNode.getRight() != jNode || jNode.getUp() != hNode) {
+            return false;
+        }
+        // rotate nodes that share 2 children, in this case "H" and "J" share the "I" and "K" nodes
+        tree.rotate(jNode, hNode);
+
+        if (!tree.root.toInOrderString().equals("[ A, B, C, D, E, F, G, H, I, J, K ]")) {
+            return false;
+        }
+        if (!tree.root.toLevelOrderString().equals("[ E, D, J, B, H, K, A, C, F, I, G ]")) {
+            return false;
+        }
         return true;
     }
 
