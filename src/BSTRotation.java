@@ -74,6 +74,11 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
      *          A     D    F    J
      *               C      G  I  K
      */
+
+    /**
+     * Performs a right rotation without including the root, as well as a left rotation including the root
+     * @return false if rotation fails, or if any value isn't what it is expected to be
+     */
     public boolean test1() {
         var tree1 = new BSTRotation<String>();
 
@@ -106,7 +111,7 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
         if (tree1.root.getRight().getData() != "H") {
             return false;
         }
-        // in order traversal is [A, B, C, D, E, F, G, H, I, J, K]
+        // in order traversal is [A, B, C, D, E, F, G, H, I, J, K], this should always remain the same
         if (!tree1.root.toInOrderString().equals("[ A, B, C, D, E, F, G, H, I, J, K ]")) {
             return false;
         }
@@ -136,13 +141,46 @@ public class BSTRotation<T extends Comparable<T>> extends BinarySearchTree_Place
          *       A     D    G
          *            C
          */
-        System.out.println(tree2.root);
-        System.out.println(tree2.root.toLevelOrderString());
+        if (tree2.root.getData() != "H") {
+            return false;
+        }
+        // double check this is still consistent
+        if (!tree2.root.toInOrderString().equals("[ A, B, C, D, E, F, G, H, I, J, K ]")) {
+            return false;
+        }
+        if (!tree2.root.toLevelOrderString().equals("[ H, E, J, B, F, I, K, A, D, G, C ]")) {
+            return false;
+        }
         return true;
     }
 
+    /**
+     * Performs rotations on nodes that do not share any children
+     * @return false if rotation fails, or if any value isn't what it is expected to be
+     */
     public boolean test2() {
+        var tree = new BSTRotation<String>();
+        if (tree.size() != 11) {
+            return false;
+        }
 
+        var dNode = tree.root.getLeft().getRight();
+        var cNode = dNode.getLeft();
+
+        if (dNode.getData() != "D" || dNode.getLeft().getData() != "C") {
+            return false;
+        }
+        if (cNode.getData() != "C" || cNode.getLeft() != null || cNode.getRight() != null) {
+            return false;
+        }
+
+        tree.rotate(cNode, dNode);
+        if (!tree.root.toInOrderString().equals("[ A, B, C, D, E, F, G, H, I, J, K ]")) {
+            return false;
+        }
+        if (!tree.root.toLevelOrderString().equals("[ E, B, H, A, C, F, J, D, G, I, K ]")) {
+            return false;
+        }
         return true;
     }
 
